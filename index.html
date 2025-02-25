@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pesquisa de Avaliação de Emoção</title>
     <script type="module">
-        // Importando Firebase e Firestore
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+        // Importando Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         // Configuração do Firebase
         const firebaseConfig = {
@@ -20,39 +20,39 @@
             measurementId: "G-WNKP3VKNDW"
         };
 
-        // Inicializa Firebase
+        // Inicializando Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Função para salvar os dados no Firestore
-        async function submitForm() {
-            const idade = document.getElementById('idade').value;
-            const genero = document.getElementById('genero').value;
-            const escolaridade = document.getElementById('escolaridade').value;
-            const valencia = document.getElementById('valencia').value;
+        // Função para enviar os dados para o Firestore
+        async function enviarDados() {
+            const idade = document.getElementById("idade").value;
+            const genero = document.getElementById("genero").value;
+            const escolaridade = document.getElementById("escolaridade").value;
+            const valencia = document.getElementById("valencia").value;
 
             if (!idade || !genero || !escolaridade || !valencia) {
-                alert("Por favor, preencha todos os campos.");
+                alert("Por favor, preencha todos os campos antes de enviar.");
                 return;
             }
 
             try {
                 await addDoc(collection(db, "respostas"), {
-                    idade: idade,
+                    idade: parseInt(idade),
                     genero: genero,
                     escolaridade: escolaridade,
-                    valencia: valencia,
-                    timestamp: new Date()
+                    valencia: parseFloat(valencia),
+                    timestamp: serverTimestamp()
                 });
-                alert("Dados enviados com sucesso para o Firebase!");
+
+                alert("Resposta enviada com sucesso!");
             } catch (error) {
-                console.error("Erro ao enviar:", error);
-                alert("Erro ao enviar os dados.");
+                console.error("Erro ao enviar os dados:", error);
+                alert("Houve um erro ao enviar os dados.");
             }
         }
-        
-        // Torna a função acessível no escopo global
-        window.submitForm = submitForm;
+
+        window.enviarDados = enviarDados;
     </script>
     <style>
         body {
@@ -93,21 +93,6 @@
         .button:hover {
             background-color: #0056b3;
         }
-        .slider-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
-        }
-        .slider {
-            width: 100%;
-        }
-        .scale-labels {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-        }
     </style>
 </head>
 <body>
@@ -116,20 +101,18 @@
         <p>Você está sendo convidado(a) a participar de uma pesquisa que envolve a avaliação de textos curtos quanto à emoção que eles evocam.</p>
         <button class="button" onclick="nextPage(2)">Próximo</button>
     </div>
-
+    
     <div class="form-section" id="page2">
         <h2>Dados Demográficos</h2>
         <form onsubmit="event.preventDefault(); nextPage(3);">
             <label for="idade">Qual a sua idade?</label>
             <input type="number" id="idade" name="idade" required><br>
-            
             <label for="genero">Gênero:</label>
             <select id="genero" name="genero">
                 <option value="masculino">Masculino</option>
                 <option value="feminino">Feminino</option>
                 <option value="prefiro_nao_informar">Prefiro não informar</option>
             </select><br>
-            
             <label for="escolaridade">Escolaridade:</label>
             <select id="escolaridade" name="escolaridade">
                 <option value="ensino_medio_completo">Ensino Médio Completo</option>
@@ -137,28 +120,21 @@
                 <option value="ensino_superior_completo">Ensino Superior Completo</option>
                 <option value="pos_graduacao">Pós-Graduação</option>
             </select><br>
-            
-            <button class="button" type="submit">Próximo</button>
+            <button class="button">Próximo</button>
         </form>
     </div>
-
+    
     <div class="form-section" id="page3">
-        <h2>Avaliação do Texto</h2>
-        <p>Hoje, me despedi de uma pessoa muito importante na minha vida. O enterro foi silencioso, e o peso da ausência tomou conta de mim...</p>
+        <h2>Avaliação de Texto</h2>
+        <p>Hoje, me despedi de uma pessoa muito importante na minha vida...</p>
         <h3>Como você avalia a emoção evocada por este texto?</h3>
-        <div class="slider-container">
-            <div class="scale-labels">
-                <span>Negativa</span>
-                <span>Positiva</span>
-            </div>
-            <input type="range" min="0" max="10" step="0.1" class="slider" id="valencia" value="5">
-        </div>
-        <button class="button" onclick="submitForm()">Enviar</button>
+        <input type="range" min="0" max="10" step="0.1" class="slider" id="valencia" value="5">
+        <button class="button" onclick="enviarDados()">Enviar</button>
     </div>
 
     <script>
         let currentPage = 1;
-        
+
         function nextPage(pageNumber) {
             document.getElementById(`page${currentPage}`).classList.remove('active');
             document.getElementById(`page${pageNumber}`).classList.add('active');
