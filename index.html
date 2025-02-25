@@ -111,6 +111,7 @@
         </div>
         <button class="button" onclick="submitForm()">Enviar</button>
     </div>
+
     <script>
         let currentPage = 1;
         function nextPage(pageNumber) {
@@ -118,13 +119,37 @@
             document.getElementById(`page${pageNumber}`).classList.add('active');
             currentPage = pageNumber;
         }
+
         function submitForm() {
+            const idade = document.getElementById('idade').value;
+            const genero = document.getElementById('genero').value;
+            const escolaridade = document.getElementById('escolaridade').value;
             const valencia = document.getElementById('valencia').value;
-            alert(`Obrigado pela sua resposta! Valência emocional: ${valencia}`);
+
+            const url = 'https://script.google.com/macros/s/AKfycbxRV1vnvIkeKqD8PhQOVSa7ULtbj58gEvaQIWw01MBEmhd7y6vAQaF3qXhdAhijZ7ND4A/exec'; // URL do Google Apps Script
+
+            const data = {
+                idade: idade,
+                genero: genero,
+                escolaridade: escolaridade,
+                valencia: valencia
+            };
+
+            fetch(url, {
+                method: 'POST',
+                body: new URLSearchParams(data),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert('Obrigado pela sua resposta!');
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+            });
         }
     </script>
 </body>
 </html>
-
 
 
