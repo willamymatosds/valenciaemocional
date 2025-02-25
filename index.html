@@ -4,6 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pesquisa de Avaliação de Emoção</title>
+    <script type="module">
+        // Importando Firebase e Firestore
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDGPia3kme9jK1XZlZgCE3Q2bCQMILVd7g",
+            authDomain: "valenciaemocional.firebaseapp.com",
+            projectId: "valenciaemocional",
+            storageBucket: "valenciaemocional.firebasestorage.app",
+            messagingSenderId: "285922726127",
+            appId: "1:285922726127:web:a45659a008a6a0a1c88b1a",
+            measurementId: "G-WNKP3VKNDW"
+        };
+
+        // Inicializa Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Função para salvar os dados no Firestore
+        async function submitForm() {
+            const idade = document.getElementById('idade').value;
+            const genero = document.getElementById('genero').value;
+            const escolaridade = document.getElementById('escolaridade').value;
+            const valencia = document.getElementById('valencia').value;
+
+            if (!idade || !genero || !escolaridade || !valencia) {
+                alert("Por favor, preencha todos os campos.");
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "respostas"), {
+                    idade: idade,
+                    genero: genero,
+                    escolaridade: escolaridade,
+                    valencia: valencia,
+                    timestamp: new Date()
+                });
+                alert("Dados enviados com sucesso para o Firebase!");
+            } catch (error) {
+                console.error("Erro ao enviar:", error);
+                alert("Erro ao enviar os dados.");
+            }
+        }
+        
+        // Torna a função acessível no escopo global
+        window.submitForm = submitForm;
+    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -63,26 +113,23 @@
 <body>
     <div class="form-section active" id="page1">
         <h2>Prezado(a) Participante</h2>
-        <p>Você está sendo convidado(a) a participar de uma pesquisa que envolve a avaliação de textos curtos quanto à emoção que eles evocam. Antes de decidir participar, é importante que você leia e compreenda os termos deste documento.</p>
-        <p><strong>Objetivo da Pesquisa:</strong> O objetivo deste estudo é avaliar as emoções evocadas por diferentes textos.</p>
-        <p><strong>Procedimentos:</strong> Você será solicitado(a) a ler uma série de textos curtos e, em seguida, avaliar a emoção que cada texto evoca.</p>
-        <p><strong>Confidencialidade:</strong> Todas as informações coletadas neste estudo serão tratadas com confidencialidade. Seus dados serão utilizados exclusivamente para fins de pesquisa e análise. Nenhuma informação pessoal que possa identificá-lo(a) será divulgada.</p>
-        <p><strong>Voluntariedade:</strong> Sua participação é totalmente voluntária. Você pode recusar-se a participar ou retirar seu consentimento a qualquer momento, sem qualquer penalidade ou prejuízo.</p>
-        <p><strong>Consentimento:</strong> Ao prosseguir com este formulário, você confirma que compreendeu as informações acima, concorda em participar voluntariamente desta pesquisa e autoriza o uso dos dados fornecidos para os fins descritos.</p>
-        <p>Se você tiver dúvidas sobre a pesquisa ou seus direitos como participante, sinta-se à vontade para entrar em contato com os pesquisadores responsáveis pelo e-mail: willamymatosds@gmail.com</p>
+        <p>Você está sendo convidado(a) a participar de uma pesquisa que envolve a avaliação de textos curtos quanto à emoção que eles evocam.</p>
         <button class="button" onclick="nextPage(2)">Próximo</button>
     </div>
+
     <div class="form-section" id="page2">
         <h2>Dados Demográficos</h2>
-        <form>
+        <form onsubmit="event.preventDefault(); nextPage(3);">
             <label for="idade">Qual a sua idade?</label>
             <input type="number" id="idade" name="idade" required><br>
+            
             <label for="genero">Gênero:</label>
             <select id="genero" name="genero">
                 <option value="masculino">Masculino</option>
                 <option value="feminino">Feminino</option>
                 <option value="prefiro_nao_informar">Prefiro não informar</option>
             </select><br>
+            
             <label for="escolaridade">Escolaridade:</label>
             <select id="escolaridade" name="escolaridade">
                 <option value="ensino_medio_completo">Ensino Médio Completo</option>
@@ -90,17 +137,14 @@
                 <option value="ensino_superior_completo">Ensino Superior Completo</option>
                 <option value="pos_graduacao">Pós-Graduação</option>
             </select><br>
-            <button class="button" onclick="nextPage(3)">Próximo</button>
+            
+            <button class="button" type="submit">Próximo</button>
         </form>
     </div>
+
     <div class="form-section" id="page3">
-        <h2>Avaliação de Texto</h2>
-        <p>A seguir, você encontrará uma série de textos curtos que deverão ser lidos com atenção. Após a leitura de cada texto, pedimos que avalie a emoção que ele evoca, utilizando uma escala linear de 1 a 5, em que 1 representa uma emoção muito negativa e 5 uma emoção muito positiva. Suas respostas são essenciais para o desenvolvimento da pesquisa.</p>
-        <button class="button" onclick="nextPage(4)">Próximo</button>
-    </div>
-    <div class="form-section" id="page4">
         <h2>Avaliação do Texto</h2>
-        <p>Hoje, me despedi de uma pessoa muito importante na minha vida. O enterro foi silencioso, e o peso da ausência tomou conta de mim. As lágrimas vieram sem que eu pudesse controlá-las. Senti como se uma parte de mim tivesse sido arrancada, deixando um buraco que nunca mais será preenchido. Enquanto as pessoas ao redor também choravam, eu tentava entender como seguir em frente sem aquela pessoa ao meu lado.</p>
+        <p>Hoje, me despedi de uma pessoa muito importante na minha vida. O enterro foi silencioso, e o peso da ausência tomou conta de mim...</p>
         <h3>Como você avalia a emoção evocada por este texto?</h3>
         <div class="slider-container">
             <div class="scale-labels">
@@ -111,43 +155,16 @@
         </div>
         <button class="button" onclick="submitForm()">Enviar</button>
     </div>
+
     <script>
         let currentPage = 1;
+        
         function nextPage(pageNumber) {
             document.getElementById(`page${currentPage}`).classList.remove('active');
             document.getElementById(`page${pageNumber}`).classList.add('active');
             currentPage = pageNumber;
         }
-
-        function submitForm() {
-            const idade = document.getElementById('idade').value;
-            const genero = document.getElementById('genero').value;
-            const escolaridade = document.getElementById('escolaridade').value;
-            const valencia = document.getElementById('valencia').value;
-
-            const url = 'https://script.google.com/macros/s/AKfycbwxDg6Ebu7ZWdifLAKFTAxZigmi_516BrPigzHFu7DnMT_LBRgmiEcznzUrxSkXXDCu6w/exec'; // URL do Google Apps Script
-
-            const data = {
-                idade: idade,
-                genero: genero,
-                escolaridade: escolaridade,
-                valencia: valencia
-            };
-
-            fetch(url, {
-                method: 'POST',
-                body: new URLSearchParams(data),
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert('Obrigado pela sua resposta!');
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                alert('Houve um erro ao enviar os dados: ' + error.message);
-            });
-        }
     </script>
 </body>
 </html>
+
