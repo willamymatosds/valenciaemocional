@@ -125,7 +125,7 @@
             const escolaridade = document.getElementById('escolaridade').value;
             const valencia = document.getElementById('valencia').value;
 
-            const url = 'https://script.google.com/macros/s/AKfycbxRV1vnvIkeKqD8PhQOVSa7ULtbj58gEvaQIWw01MBEmhd7y6vAQaF3qXhdAhijZ7ND4A/exec'; // URL do Google Apps Script
+            const url = 'https://script.google.com/macros/s/AKfycbwxDg6Ebu7ZWdifLAKFTAxZigmi_516BrPigzHFu7DnMT_LBRgmiEcznzUrxSkXXDCu6w/exec'; // URL do Google Apps Script
 
             const data = {
                 idade: idade,
@@ -145,11 +145,9 @@
             })
             .catch(error => {
                 console.error('Erro:', error);
-                alert('Houve um erro ao enviar os dados.');
+                alert('Houve um erro ao enviar os dados: ' + error.message);
             });
         }
     </script>
 </body>
 </html>
-
-
