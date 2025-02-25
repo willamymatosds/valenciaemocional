@@ -3,144 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesquisa de Avaliação de Emoção</title>
+    <title>Formulário de Pesquisa</title>
     <script type="module">
         // Importando Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-        // Configuração do Firebase
+        // Configuração do Firebase (substitua pelos seus dados)
         const firebaseConfig = {
-            apiKey: "AIzaSyDGPia3kme9jK1XZlZgCE3Q2bCQMILVd7g",
-            authDomain: "valenciaemocional.firebaseapp.com",
-            projectId: "valenciaemocional",
-            storageBucket: "valenciaemocional.firebasestorage.app",
-            messagingSenderId: "285922726127",
-            appId: "1:285922726127:web:a45659a008a6a0a1c88b1a",
-            measurementId: "G-WNKP3VKNDW"
+            apiKey: "AIzaSyCVTpT7wM3iuqOOuVdB415ZCULuU-yPSOg",
+            authDomain: "formulario-1703f.firebaseapp.com",
+            projectId: "formulario-1703f",
+            storageBucket: "formulario-1703f.appspot.com",
+            messagingSenderId: "744954577389",
+            appId: "1:744954577389:web:ff4edb902f872c222567e4",
+            measurementId: "G-ZBDYJ1DKWV"
         };
 
         // Inicializando Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Função para enviar os dados para o Firestore
+        // Função para enviar os dados ao Firestore
         async function enviarDados() {
+            const nome = document.getElementById("nome").value;
             const idade = document.getElementById("idade").value;
-            const genero = document.getElementById("genero").value;
-            const escolaridade = document.getElementById("escolaridade").value;
-            const valencia = document.getElementById("valencia").value;
+            const email = document.getElementById("email").value;
 
-            if (!idade || !genero || !escolaridade || !valencia) {
-                alert("Por favor, preencha todos os campos antes de enviar.");
+            if (!nome || !idade || !email) {
+                alert("Por favor, preencha todos os campos.");
                 return;
             }
 
             try {
+                // Adicionando os dados na coleção "respostas"
                 await addDoc(collection(db, "respostas"), {
+                    nome: nome,
                     idade: parseInt(idade),
-                    genero: genero,
-                    escolaridade: escolaridade,
-                    valencia: parseFloat(valencia),
+                    email: email,
                     timestamp: serverTimestamp()
                 });
 
-                alert("Resposta enviada com sucesso!");
+                alert("Dados enviados com sucesso!");
+                document.getElementById("formulario").reset();
             } catch (error) {
                 console.error("Erro ao enviar os dados:", error);
-                alert("Houve um erro ao enviar os dados.");
+                alert("Erro ao enviar os dados. Verifique o console para mais detalhes.");
             }
         }
 
+        // Tornar a função global para o botão chamar
         window.enviarDados = enviarDados;
     </script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
+            background-color: #f2f2f2;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
+            height: 100vh;
         }
-        .form-section {
-            width: 100%;
-            max-width: 600px;
-            background-color: #fff;
+        .container {
+            background: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            display: none;
+            width: 300px;
         }
-        .form-section.active {
-            display: block;
-        }
-        .button {
+        input {
             width: 100%;
-            padding: 15px;
-            font-size: 1.2em;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
             background-color: #007BFF;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin-top: 30px;
         }
-        .button:hover {
+        button:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <div class="form-section active" id="page1">
-        <h2>Prezado(a) Participante</h2>
-        <p>Você está sendo convidado(a) a participar de uma pesquisa que envolve a avaliação de textos curtos quanto à emoção que eles evocam.</p>
-        <button class="button" onclick="nextPage(2)">Próximo</button>
-    </div>
-    
-    <div class="form-section" id="page2">
-        <h2>Dados Demográficos</h2>
-        <form onsubmit="event.preventDefault(); nextPage(3);">
-            <label for="idade">Qual a sua idade?</label>
-            <input type="number" id="idade" name="idade" required><br>
-            <label for="genero">Gênero:</label>
-            <select id="genero" name="genero">
-                <option value="masculino">Masculino</option>
-                <option value="feminino">Feminino</option>
-                <option value="prefiro_nao_informar">Prefiro não informar</option>
-            </select><br>
-            <label for="escolaridade">Escolaridade:</label>
-            <select id="escolaridade" name="escolaridade">
-                <option value="ensino_medio_completo">Ensino Médio Completo</option>
-                <option value="ensino_superior_incompleto">Ensino Superior Incompleto</option>
-                <option value="ensino_superior_completo">Ensino Superior Completo</option>
-                <option value="pos_graduacao">Pós-Graduação</option>
-            </select><br>
-            <button class="button">Próximo</button>
-        </form>
-    </div>
-    
-    <div class="form-section" id="page3">
-        <h2>Avaliação de Texto</h2>
-        <p>Hoje, me despedi de uma pessoa muito importante na minha vida...</p>
-        <h3>Como você avalia a emoção evocada por este texto?</h3>
-        <input type="range" min="0" max="10" step="0.1" class="slider" id="valencia" value="5">
-        <button class="button" onclick="enviarDados()">Enviar</button>
-    </div>
 
-    <script>
-        let currentPage = 1;
+<div class="container">
+    <h2>Formulário</h2>
+    <form id="formulario" onsubmit="event.preventDefault(); enviarDados();">
+        <input type="text" id="nome" placeholder="Nome">
+        <input type="number" id="idade" placeholder="Idade">
+        <input type="email" id="email" placeholder="E-mail">
+        <button type="submit">Enviar</button>
+    </form>
+</div>
 
-        function nextPage(pageNumber) {
-            document.getElementById(`page${currentPage}`).classList.remove('active');
-            document.getElementById(`page${pageNumber}`).classList.add('active');
-            currentPage = pageNumber;
-        }
-    </script>
 </body>
 </html>
 
